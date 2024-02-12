@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -146,31 +147,70 @@ void _showDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return SimpleDialog(
-        title: const Text('Add Feed'),
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: const TextField(
-              decoration: InputDecoration(labelText: "name"),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: const TextField(
-              decoration: InputDecoration(labelText: "feed url"),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              onPressed: () {},
-              child: const Text('Add'),
-            ),
-          )
-        ],
-      );
+      return Dialog();
     },
   );
+}
+
+class Dialog extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _Dialog();
+  }
+}
+
+class _Dialog extends State<Dialog> {
+  String name = "";
+  String url = "";
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      title: const Text('Add Feed'),
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.all(16),
+          child: TextField(
+            decoration: const InputDecoration(labelText: "name"),
+            onChanged: (value) {
+              setState(() {
+                name = value;
+              });
+            },
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(16),
+          child: TextField(
+            decoration: const InputDecoration(labelText: "feed url"),
+            onChanged: (value) {
+              setState(() {
+                url = value;
+              });
+            },
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(16),
+          child: ElevatedButton(
+            onPressed: () {
+              parseRss(url);
+            },
+            child: const Text('Add'),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+void parseRss(String url) async {
+  try {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode != 200) {
+      throw Exception("Failed to fetch atom.xml");
+    }
+  } catch (e) {
+    throw Exception(e);
+  }
 }
