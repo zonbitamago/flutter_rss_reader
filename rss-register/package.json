@@ -16,7 +16,6 @@
     "vite-plugin-node-polyfills": "^0.21.0"
   },
   "dependencies": {
-    "dotenv": "^16.4.5",
     "firebase": "^10.8.0",
     "rss-parser": "^3.13.0"
   }
