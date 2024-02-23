@@ -1,5 +1,14 @@
 import Parser from "rss-parser";
 import { initializeApp } from "firebase/app";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -27,13 +36,33 @@ const firebaseConfig = {
 
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
-      console.log(app);
-      console.log(import.meta.env);
-      console.log(firebaseConfig);
+      const db = getFirestore(app);
 
-      //   feed.items.forEach((item) => {
-      //     console.log(item.title + ":" + item.link);
-      //   });
+      try {
+        // firestoreにupsertする
+        const rssCollection = collection(db, "rss");
+        const rssQuery = query(rssCollection, where("url", "==", url));
+        const rssSnapshot = await getDocs(rssQuery);
+
+        if (rssSnapshot.empty) {
+          // Document doesn't exist, create a new one
+          const docRef = await addDoc(rssCollection, {
+            url: url,
+            title: feed.title,
+          });
+          console.log("Document written with ID: ", docRef.id);
+        } else {
+          // Document exists, update it
+          const docRef = rssSnapshot.docs[0].ref;
+          await updateDoc(docRef, {
+            url: url,
+            title: feed.title,
+          });
+          console.log("Document updated with ID: ", docRef.id);
+        }
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     })();
   });
 }

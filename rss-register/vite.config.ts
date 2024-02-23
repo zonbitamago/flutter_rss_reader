@@ -23,6 +23,6 @@ const manifest = defineManifest({
 export default defineConfig({
   plugins: [crx({ manifest }), nodePolyfills()],
   build: {
-    sourcemap: true,
+    sourcemap: false,
   },
 });
