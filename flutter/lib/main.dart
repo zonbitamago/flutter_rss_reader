@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:rss_dart/dart_rss.dart';
+import 'package:rss_dart/domain/rss1_feed.dart';
 
 void main() {
   runApp(const MyApp());
@@ -162,6 +164,7 @@ class Dialog extends StatefulWidget {
 class _Dialog extends State<Dialog> {
   String name = "";
   String url = "";
+  String infoText = "";
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
@@ -189,12 +192,24 @@ class _Dialog extends State<Dialog> {
             },
           ),
         ),
-        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(8),
+          child: Text(infoText),
+        ),
         Container(
           padding: const EdgeInsets.all(16),
           child: ElevatedButton(
-            onPressed: () {
-              parseRss(url);
+            onPressed: () async {
+              setState(() {
+                infoText = "";
+              });
+              try {
+                await parseRss(url);
+              } catch (e) {
+                setState(() {
+                  infoText = "このURLは登録できません。\n${e.toString()}";
+                });
+              }
             },
             child: const Text('Add'),
           ),
@@ -204,13 +219,47 @@ class _Dialog extends State<Dialog> {
   }
 }
 
-void parseRss(String url) async {
+Future<http.Response?> parseRss(String url) async {
   try {
     final response = await http.get(Uri.parse(url));
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch atom.xml");
     }
+
+    final body = response.body;
+
+    if (!isAtom(body) && !isRss1(body) && !isRss2(body)) {
+      throw Exception("This is not a valid rss feed");
+    }
+    return response;
   } catch (e) {
     throw Exception(e);
+  }
+}
+
+bool isRss2(String body) {
+  try {
+    RssFeed.parse(body);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+bool isAtom(String body) {
+  try {
+    AtomFeed.parse(body);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+bool isRss1(String body) {
+  try {
+    Rss1Feed.parse(body);
+    return true;
+  } catch (e) {
+    return false;
   }
 }
