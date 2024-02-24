@@ -116,3 +116,8 @@ app.*.map.json
 /android/app/release
 
 lib/config/config.dart
+
+**/google-services.json
+**/firebase_app_id_file.json
+**/GoogleService-Info.plist
+**/firebase_options.dart
