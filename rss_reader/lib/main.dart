@@ -1,9 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:rss_dart/dart_rss.dart';
 import 'package:rss_dart/domain/rss1_feed.dart';
 
-void main() {
+void main() async {
+  final configurations = Configurations();
+  await Firebase.initializeApp(
+      options: FirebaseOptions(
+          apiKey: configurations.apiKey,
+          appId: configurations.appId,
+          messagingSenderId: configurations.messagingSenderId,
+          projectId: configurations.projectId));
+
   runApp(const MyApp());
 }
 

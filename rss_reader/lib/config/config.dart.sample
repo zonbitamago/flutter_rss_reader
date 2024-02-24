@@ -1,0 +1,15 @@
+class Configurations {
+  static const _apiKey = "xxxx";
+  static const _authDomain = "xxxx.firebaseapp.com";
+  static const _projectId = "xxxx";
+  static const _storageBucket = "xxxx.appspot.com";
+  static const _messagingSenderId = "xxxx";
+  static const _appId = "1:xxxx:web:xxxx";
+
+  String get apiKey => _apiKey;
+  String get authDomain => _authDomain;
+  String get projectId => _projectId;
+  String get storageBucket => _storageBucket;
+  String get messagingSenderId => _messagingSenderId;
+  String get appId => _appId;
+}
